@@ -23,6 +23,7 @@ on Windows.`,
 		downCmd(),
 		statusCmd(),
 		openCmd(),
+		dashboardCmd(),
 		trayCmd(),
 	)
 	return root

@@ -60,8 +60,8 @@ All three apps can read the same files safely (Immich documents this explicitly)
 | `internal/landing` | Dashboard HTTP server (tiles, QR codes, status) |
 | `internal/tray` | Windows tray app via getlantern/systray |
 | `internal/config` | Read/write `%APPDATA%\snugNAS\config.toml` |
-| `compose/` | Compose + Caddyfile templates |
-| `web/` | Embedded dashboard assets |
+| `internal/compose/templates/` | Embedded Compose + Caddyfile templates |
+| `internal/landing/web/` | Embedded dashboard assets |
 
 ## Decisions deliberately made
 

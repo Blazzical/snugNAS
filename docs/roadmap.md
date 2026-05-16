@@ -8,13 +8,13 @@
 - [x] docker-compose + Caddyfile templates
 - [x] Static dashboard HTML/CSS
 
-## v0.2 — Buildable
+## v0.2 — Buildable (done)
 
-- [ ] `internal/config` reads/writes `%APPDATA%\snugNAS\config.toml`
-- [ ] `internal/compose` renders templates with config values
-- [ ] `internal/landing` serves `web/` via embed.FS, generates QR codes
-- [ ] `snugnas up` actually runs `docker compose up -d`
-- [ ] `snugnas down` and `snugnas status` work end-to-end
+- [x] `internal/config` reads/writes `%APPDATA%\snugNAS\config.toml` (TOML, BOM-tolerant)
+- [x] `internal/compose` renders templates with config values
+- [x] `internal/landing` serves embedded `web/` via embed.FS, generates QR codes
+- [x] `snugnas up` shells out to `docker compose up -d`
+- [x] `snugnas down`, `snugnas status`, `snugnas dashboard`, `snugnas open` wired up
 
 ## v0.3 — Wizard
 

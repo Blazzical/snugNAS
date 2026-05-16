@@ -1,8 +1,16 @@
 package cli
 
 import (
+	"errors"
 	"fmt"
+	"os"
+	"os/exec"
+	"os/signal"
+	"runtime"
 
+	"github.com/Blazzical/snugNAS/internal/compose"
+	"github.com/Blazzical/snugNAS/internal/config"
+	"github.com/Blazzical/snugNAS/internal/landing"
 	"github.com/spf13/cobra"
 )
 
@@ -11,9 +19,14 @@ func upCmd() *cobra.Command {
 		Use:   "up",
 		Short: "Start the snugNAS stack (docker compose up -d)",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// TODO: shell out to `docker compose -f runtime/docker-compose.yml up -d`.
-			fmt.Println("up: not yet implemented")
-			return nil
+			cfg, err := loadConfig()
+			if err != nil {
+				return err
+			}
+			if err := compose.Render(cfg); err != nil {
+				return err
+			}
+			return compose.Up(cmd.Context(), cmd.OutOrStdout(), cmd.ErrOrStderr())
 		},
 	}
 }
@@ -23,9 +36,10 @@ func downCmd() *cobra.Command {
 		Use:   "down",
 		Short: "Stop the snugNAS stack (docker compose down)",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// TODO: shell out to `docker compose -f runtime/docker-compose.yml down`.
-			fmt.Println("down: not yet implemented")
-			return nil
+			if _, err := loadConfig(); err != nil {
+				return err
+			}
+			return compose.Down(cmd.Context(), cmd.OutOrStdout(), cmd.ErrOrStderr())
 		},
 	}
 }
@@ -35,9 +49,10 @@ func statusCmd() *cobra.Command {
 		Use:   "status",
 		Short: "Show the running status of snugNAS services",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// TODO: parse `docker compose ps --format json` and render a table.
-			fmt.Println("status: not yet implemented")
-			return nil
+			if _, err := loadConfig(); err != nil {
+				return err
+			}
+			return compose.Status(cmd.Context(), cmd.OutOrStdout(), cmd.ErrOrStderr())
 		},
 	}
 }
@@ -47,9 +62,30 @@ func openCmd() *cobra.Command {
 		Use:   "open",
 		Short: "Open the snugNAS dashboard in the default browser",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// TODO: cross-platform browser open of http://snugnas.local
-			fmt.Println("open: not yet implemented")
-			return nil
+			cfg, err := loadConfig()
+			if err != nil {
+				return err
+			}
+			url := fmt.Sprintf("http://127.0.0.1:%d/", cfg.DashboardPort)
+			fmt.Fprintln(cmd.OutOrStdout(), "Opening", url)
+			return openBrowser(url)
+		},
+	}
+}
+
+func dashboardCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "dashboard",
+		Short: "Run the dashboard HTTP server in the foreground",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cfg, err := loadConfig()
+			if err != nil {
+				return err
+			}
+			ctx, stop := signal.NotifyContext(cmd.Context(), os.Interrupt)
+			defer stop()
+			fmt.Fprintf(cmd.OutOrStdout(), "Dashboard listening at http://127.0.0.1:%d/\n", cfg.DashboardPort)
+			return landing.Serve(ctx, cfg)
 		},
 	}
 }
@@ -57,11 +93,39 @@ func openCmd() *cobra.Command {
 func trayCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "tray",
-		Short: "Run the Windows tray app (background, foreground on Linux/macOS)",
+		Short: "Run the Windows tray app (planned for v0.5)",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// TODO: getlantern/systray loop. See internal/tray.
-			fmt.Println("tray: not yet implemented")
-			return nil
+			return errors.New("tray app not yet implemented (planned for v0.5)")
 		},
 	}
 }
+
+func loadConfig() (*config.Config, error) {
+	cfg, err := config.Load()
+	if err != nil {
+		if config.IsNotConfigured(err) {
+			p, _ := config.Path()
+			return nil, fmt.Errorf("no config found at %s — run `snugnas wizard` first", p)
+		}
+		return nil, err
+	}
+	if cfg.StorageRoot == "" {
+		p, _ := config.Path()
+		return nil, fmt.Errorf("storage_root is empty in %s — edit it and try again", p)
+	}
+	return cfg, nil
+}
+
+func openBrowser(url string) error {
+	var cmd *exec.Cmd
+	switch runtime.GOOS {
+	case "windows":
+		cmd = exec.Command("cmd", "/c", "start", "", url)
+	case "darwin":
+		cmd = exec.Command("open", url)
+	default:
+		cmd = exec.Command("xdg-open", url)
+	}
+	return cmd.Start()
+}
+
