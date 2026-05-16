@@ -16,13 +16,14 @@
 - [x] `snugnas up` shells out to `docker compose up -d`
 - [x] `snugnas down`, `snugnas status`, `snugnas dashboard`, `snugnas open` wired up
 
-## v0.3 — Wizard
+## v0.3 — Wizard (done)
 
-- [ ] `snugnas wizard` serves a 3-step web flow on :7777
-  - Step 1: pick storage directory
-  - Step 2: admin email + password + hostname
-  - Step 3: pull images, start stack, show progress
-- [ ] On success, browser auto-redirects to the dashboard
+- [x] `snugnas wizard` serves a single-page web flow on :7777
+- [x] Collects storage path, hostname, admin email (password collection deferred — services own admin signup)
+- [x] `POST /api/commit` writes config, kicks off provisioning in a goroutine
+- [x] Page polls `GET /api/state` for live log + phase
+- [x] On `phase=done`, page redirects to the dashboard at http://localhost:8080/
+- [x] CLI auto-opens the browser when `snugnas wizard` starts
 
 ## v0.4 — Installer
 
