@@ -8,8 +8,10 @@ services:
     image: caddy:2.8
     restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
+      # Host 80/443 are reserved on Windows by HTTP.sys/IIS by default.
+      # Map to high ports so smoke-test works without touching IIS.
+      # The installer (v0.4) will offer to free 80/443 properly.
+      - "8080:80"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
@@ -23,8 +25,12 @@ services:
   immich-server:
     image: ghcr.io/immich-app/immich-server:release
     restart: unless-stopped
+    ports:
+      # Direct port mapping for v0.2 — Caddy subpath works for Immich's API
+      # but not its web UI assets. Wizard will switch to subdomain routing.
+      - "2283:2283"
     volumes:
-      - "{{.StorageRoot}}/photos:/usr/src/app/upload"
+      - "{{.PosixStorageRoot}}/photos:/usr/src/app/upload"
       - /etc/localtime:/etc/localtime:ro
     environment:
       DB_HOSTNAME: immich-postgres
@@ -54,29 +60,33 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_DB: immich
     volumes:
-      - "{{.StorageRoot}}/immich-db:/var/lib/postgresql/data"
+      - "{{.PosixStorageRoot}}/immich-db:/var/lib/postgresql/data"
 
   # ── Jellyfin (video/audio) ────────────────────────────────────────────────
   jellyfin:
     image: jellyfin/jellyfin:latest
     restart: unless-stopped
+    ports:
+      # Direct port mapping for v0.2 — Caddy subpath routing for Jellyfin
+      # needs its internal "Base URL" set, which is wizard work for v0.3.
+      - "8096:8096"
     volumes:
-      - "{{.StorageRoot}}/jellyfin/config:/config"
-      - "{{.StorageRoot}}/jellyfin/cache:/cache"
-      - "{{.StorageRoot}}/media:/media:ro"
+      - "{{.PosixStorageRoot}}/jellyfin/config:/config"
+      - "{{.PosixStorageRoot}}/jellyfin/cache:/cache"
+      - "{{.PosixStorageRoot}}/media:/media:ro"
     environment:
-      JELLYFIN_PublishedServerUrl: https://{{.Hostname}}/jellyfin
+      JELLYFIN_PublishedServerUrl: http://{{.Hostname}}:8096
 
   # ── FileBrowser (general files) ───────────────────────────────────────────
   filebrowser:
     image: filebrowser/filebrowser:latest
     restart: unless-stopped
     volumes:
-      - "{{.StorageRoot}}/files:/srv"
-      - "{{.StorageRoot}}/filebrowser/database.db:/database.db"
-      - "{{.StorageRoot}}/filebrowser/settings.json:/.filebrowser.json"
+      - "{{.PosixStorageRoot}}/files:/srv"
+      - filebrowser_data:/config
 
 volumes:
   caddy_data:
   caddy_config:
   immich_model_cache:
+  filebrowser_data:

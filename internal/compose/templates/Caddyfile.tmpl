@@ -1,10 +1,9 @@
-# snugNAS Caddyfile template
-#
-# Single ingress for the stack. Path-based routing so everything lives under
-# one hostname (default: snugnas.local). The dashboard is served by the Go
-# binary on the host at :7777 — Caddy proxies it.
+# snugNAS Caddyfile template — single ingress for the stack.
+# Listens on :80 inside the container (mapped to host 8080 in compose) and
+# accepts any host header. v0.4 will switch to hostname-based matching with
+# internal-CA TLS once mDNS is in place.
 
-{{.Hostname}} {
+:80 {
     # Dashboard (Go binary on the host — Docker Desktop's host.docker.internal)
     handle / {
         reverse_proxy host.docker.internal:{{.DashboardPort}}

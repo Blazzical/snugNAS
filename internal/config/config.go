@@ -108,6 +108,13 @@ func IsNotConfigured(err error) bool {
 	return errors.Is(err, os.ErrNotExist)
 }
 
+// PosixStorageRoot returns StorageRoot with backslashes converted to forward
+// slashes. Used by templates so YAML doesn't choke on Windows paths and Docker
+// accepts the bind-mount source consistently.
+func (c *Config) PosixStorageRoot() string {
+	return filepath.ToSlash(c.StorageRoot)
+}
+
 func randomHex(nBytes int) (string, error) {
 	b := make([]byte, nBytes)
 	if _, err := rand.Read(b); err != nil {

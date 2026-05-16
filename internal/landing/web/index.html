@@ -13,7 +13,7 @@
     </header>
 
     <main class="tiles">
-        <a class="tile" href="/photos/">
+        <a class="tile" data-port="2283" data-path="/" href="#">
             <div class="tile-icon">photos</div>
             <h2>Photos</h2>
             <p>Auto-backup from your phone. Powered by Immich.</p>
@@ -21,7 +21,7 @@
             <span class="hint">Scan to set up the Immich app</span>
         </a>
 
-        <a class="tile" href="/jellyfin/">
+        <a class="tile" data-port="8096" data-path="/" href="#">
             <div class="tile-icon">media</div>
             <h2>Movies &amp; Music</h2>
             <p>Stream to your phone, smart TV, or browser. Powered by Jellyfin.</p>
@@ -29,7 +29,7 @@
             <span class="hint">Scan to set up the Jellyfin app</span>
         </a>
 
-        <a class="tile" href="/files/">
+        <a class="tile" data-port="8080" data-path="/files/" href="#">
             <div class="tile-icon">files</div>
             <h2>Files</h2>
             <p>Browse, upload, and share everything else. Powered by FileBrowser.</p>
@@ -41,5 +41,17 @@
     <footer>
         <p>snugNAS · <a href="https://github.com/Blazzical/snugNAS">source</a></p>
     </footer>
+
+    <script>
+        // Tile hrefs use the same hostname the user reached the dashboard on
+        // (localhost / snugnas.local / LAN IP), so a phone scanning the QR
+        // and a desktop browser both land on a reachable URL.
+        document.querySelectorAll('a.tile').forEach(t => {
+            const host = window.location.hostname;
+            const port = t.dataset.port;
+            const path = t.dataset.path || '/';
+            t.href = `http://${host}:${port}${path}`;
+        });
+    </script>
 </body>
 </html>
