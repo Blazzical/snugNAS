@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -12,6 +11,7 @@ import (
 	"github.com/Blazzical/snugNAS/internal/config"
 	"github.com/Blazzical/snugNAS/internal/landing"
 	"github.com/Blazzical/snugNAS/internal/mdns"
+	"github.com/Blazzical/snugNAS/internal/tray"
 	"github.com/spf13/cobra"
 )
 
@@ -103,9 +103,16 @@ func dashboardCmd() *cobra.Command {
 func trayCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "tray",
-		Short: "Run the Windows tray app (planned for v0.5)",
+		Short: "Run the snugNAS tray app (dashboard + mDNS in one process)",
+		Long: `Shows a snugNAS icon in the Windows system tray. While running it
+hosts the dashboard on http://127.0.0.1:<DashboardPort>/ and publishes
+<hostname>.local on the LAN via mDNS. Click the icon to open the dashboard.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return errors.New("tray app not yet implemented (planned for v0.5)")
+			cfg, err := loadConfig()
+			if err != nil {
+				return err
+			}
+			return tray.Run(cfg)
 		},
 	}
 }
