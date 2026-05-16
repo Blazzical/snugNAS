@@ -25,6 +25,7 @@ on Windows.`,
 		openCmd(),
 		dashboardCmd(),
 		trayCmd(),
+		autostartCmd(),
 	)
 	return root
 }
