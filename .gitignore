@@ -1,0 +1,31 @@
+# Build output
+/snugnas
+/snugnas.exe
+/dist/
+/bin/
+
+# Go
+*.test
+*.out
+/vendor/
+
+# Generated config (per-install, not source-controlled)
+/runtime/
+/data/
+.env
+docker-compose.generated.yml
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Claude Code local settings
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Upstream reference clones (if any)
+/upstream/

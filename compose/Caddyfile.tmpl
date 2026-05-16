@@ -1,0 +1,35 @@
+# snugNAS Caddyfile template
+#
+# Single ingress for the stack. Path-based routing so everything lives under
+# one hostname (default: snugnas.local). The dashboard is served by the Go
+# binary on the host at :7777 — Caddy proxies it.
+
+{{.Hostname}} {
+    # Dashboard (Go binary on the host — Docker Desktop's host.docker.internal)
+    handle / {
+        reverse_proxy host.docker.internal:7777
+    }
+    handle /api/* {
+        reverse_proxy host.docker.internal:7777
+    }
+    handle /static/* {
+        reverse_proxy host.docker.internal:7777
+    }
+
+    # Immich
+    handle /photos/* {
+        uri strip_prefix /photos
+        reverse_proxy immich-server:2283
+    }
+
+    # Jellyfin
+    handle /jellyfin/* {
+        reverse_proxy jellyfin:8096
+    }
+
+    # FileBrowser
+    handle /files/* {
+        uri strip_prefix /files
+        reverse_proxy filebrowser:80
+    }
+}

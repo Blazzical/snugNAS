@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>snugNAS</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <h1>snugNAS</h1>
+        <p class="tagline">Your home server. On your terms.</p>
+    </header>
+
+    <main class="tiles">
+        <a class="tile" href="/photos/">
+            <div class="tile-icon">photos</div>
+            <h2>Photos</h2>
+            <p>Auto-backup from your phone. Powered by Immich.</p>
+            <img class="qr" src="/api/qr?service=immich" alt="Immich QR code">
+            <span class="hint">Scan to set up the Immich app</span>
+        </a>
+
+        <a class="tile" href="/jellyfin/">
+            <div class="tile-icon">media</div>
+            <h2>Movies &amp; Music</h2>
+            <p>Stream to your phone, smart TV, or browser. Powered by Jellyfin.</p>
+            <img class="qr" src="/api/qr?service=jellyfin" alt="Jellyfin QR code">
+            <span class="hint">Scan to set up the Jellyfin app</span>
+        </a>
+
+        <a class="tile" href="/files/">
+            <div class="tile-icon">files</div>
+            <h2>Files</h2>
+            <p>Browse, upload, and share everything else. Powered by FileBrowser.</p>
+            <img class="qr" src="/api/qr?service=filebrowser" alt="FileBrowser QR code">
+            <span class="hint">Scan to open on your phone</span>
+        </a>
+    </main>
+
+    <footer>
+        <p>snugNAS · <a href="https://github.com/Blazzical/snugNAS">source</a></p>
+    </footer>
+</body>
+</html>
