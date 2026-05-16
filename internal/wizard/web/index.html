@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>snugNAS — Setup</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <main class="card">
+        <header>
+            <h1>snugNAS</h1>
+            <p class="tagline">Set up your home server.</p>
+        </header>
+
+        <section id="form-section">
+            <form id="wizard-form">
+                <label>
+                    <span class="label">Storage folder</span>
+                    <span class="hint">Where photos, videos, and files will be stored on this PC.</span>
+                    <input type="text" name="storage_root" id="storage_root" required
+                           placeholder="E:\snugNAS-data" autocomplete="off">
+                </label>
+
+                <label>
+                    <span class="label">Hostname</span>
+                    <span class="hint">What this server is called on your network. Keep the default unless you have a reason.</span>
+                    <input type="text" name="hostname" id="hostname" required
+                           placeholder="snugnas.local" autocomplete="off">
+                </label>
+
+                <label>
+                    <span class="label">Admin email</span>
+                    <span class="hint">Used as a default suggestion when you sign up for Immich, Jellyfin, and FileBrowser. Not used for anything else yet.</span>
+                    <input type="email" name="admin_email" id="admin_email"
+                           placeholder="you@example.com" autocomplete="off">
+                </label>
+
+                <button type="submit" class="primary">Set up snugNAS</button>
+                <p id="form-error" class="error" hidden></p>
+            </form>
+        </section>
+
+        <section id="provision-section" hidden>
+            <h2 id="provision-title">Setting up…</h2>
+            <p class="hint" id="provision-hint">This can take 5–20 minutes on first run while we download Immich, Jellyfin, and FileBrowser.</p>
+            <pre id="log" aria-live="polite"></pre>
+            <p id="provision-error" class="error" hidden></p>
+            <a id="dashboard-link" class="primary" href="http://localhost:8080/" hidden>Open dashboard</a>
+        </section>
+    </main>
+
+    <script src="/static/wizard.js"></script>
+</body>
+</html>
