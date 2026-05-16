@@ -17,6 +17,7 @@ import (
 	"time"
 
 	"github.com/Blazzical/snugNAS/internal/config"
+	"github.com/Blazzical/snugNAS/internal/landing"
 )
 
 //go:embed web
@@ -76,17 +77,43 @@ func Serve(ctx context.Context, port int) error {
 		return err
 	}
 
-	mux := http.NewServeMux()
-	mux.Handle("/static/", http.FileServer(http.FS(sub)))
-	mux.HandleFunc("/", s.handleIndex(sub))
-	mux.HandleFunc("/api/defaults", s.handleDefaults)
-	mux.HandleFunc("/api/commit", s.handleCommit)
-	mux.HandleFunc("/api/state", s.handleState)
+	// Wizard routes — active during PhaseForm and PhaseProvisioning.
+	wizardMux := http.NewServeMux()
+	wizardMux.Handle("/static/", http.FileServer(http.FS(sub)))
+	wizardMux.HandleFunc("/", s.handleIndex(sub))
+
+	// API endpoints are always served by the wizard, regardless of phase,
+	// so the page can keep polling after provisioning completes.
+	apiMux := http.NewServeMux()
+	apiMux.HandleFunc("/api/defaults", s.handleDefaults)
+	apiMux.HandleFunc("/api/commit", s.handleCommit)
+	apiMux.HandleFunc("/api/state", s.handleState)
+
+	// Dashboard routes — activated after PhaseDone so /, /static/*, and
+	// /api/qr serve the snugNAS landing page instead of the wizard form.
+	dashboardMux := landing.Handlers(s.cfg)
+
+	// Phased router: API always goes to wizard; everything else goes to
+	// wizard normally and to dashboard once provisioning is done.
+	phased := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/api/defaults" || r.URL.Path == "/api/commit" || r.URL.Path == "/api/state" {
+			apiMux.ServeHTTP(w, r)
+			return
+		}
+		s.mu.Lock()
+		done := s.phase == PhaseDone
+		s.mu.Unlock()
+		if done {
+			dashboardMux.ServeHTTP(w, r)
+			return
+		}
+		wizardMux.ServeHTTP(w, r)
+	})
 
 	addr := net.JoinHostPort("127.0.0.1", strconv.Itoa(port))
 	srv := &http.Server{
 		Addr:              addr,
-		Handler:           mux,
+		Handler:           phased,
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 

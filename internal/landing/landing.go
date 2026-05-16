@@ -21,23 +21,26 @@ import (
 //go:embed web
 var webFS embed.FS
 
-// Serve starts the dashboard HTTP server on localhost:<DashboardPort> and
-// blocks until ctx is canceled.
-func Serve(ctx context.Context, cfg *config.Config) error {
-	sub, err := fs.Sub(webFS, "web")
-	if err != nil {
-		return err
-	}
-
+// Handlers returns an http.Handler that serves the dashboard at /, its static
+// assets at /static/*, and PNG QR codes at /api/qr?service=<name>. Useful for
+// mounting the dashboard inside a larger server (e.g. the wizard, after
+// provisioning completes).
+func Handlers(cfg *config.Config) http.Handler {
+	sub, _ := fs.Sub(webFS, "web")
 	mux := http.NewServeMux()
 	mux.Handle("/static/", http.FileServer(http.FS(sub)))
 	mux.HandleFunc("/api/qr", qrHandler(cfg))
 	mux.HandleFunc("/", indexHandler(sub))
+	return mux
+}
 
+// Serve starts the dashboard HTTP server on localhost:<DashboardPort> and
+// blocks until ctx is canceled.
+func Serve(ctx context.Context, cfg *config.Config) error {
 	addr := net.JoinHostPort("127.0.0.1", strconv.Itoa(cfg.DashboardPort))
 	srv := &http.Server{
 		Addr:         addr,
-		Handler:      mux,
+		Handler:      Handlers(cfg),
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
@@ -95,14 +98,17 @@ func qrHandler(cfg *config.Config) http.HandlerFunc {
 	}
 }
 
+// serviceURL returns the URL a phone or browser should use for a service.
+// v0.2 uses direct host:port for each service; v0.4 will switch to
+// https://hostname/<service>/ via Caddy once Base URLs and TLS are sorted.
 func serviceURL(cfg *config.Config, service string) (string, error) {
 	switch service {
 	case "immich":
-		return fmt.Sprintf("https://%s/photos/", cfg.Hostname), nil
+		return fmt.Sprintf("http://%s:2283/", cfg.Hostname), nil
 	case "jellyfin":
-		return fmt.Sprintf("https://%s/jellyfin/", cfg.Hostname), nil
+		return fmt.Sprintf("http://%s:8096/", cfg.Hostname), nil
 	case "filebrowser":
-		return fmt.Sprintf("https://%s/files/", cfg.Hostname), nil
+		return fmt.Sprintf("http://%s:8080/files/", cfg.Hostname), nil
 	default:
 		return "", fmt.Errorf("unknown service %q", service)
 	}
