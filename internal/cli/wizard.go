@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Blazzical/snugNAS/internal/config"
+	"github.com/Blazzical/snugNAS/internal/mdns"
 	"github.com/Blazzical/snugNAS/internal/wizard"
 	"github.com/spf13/cobra"
 )
@@ -31,6 +32,14 @@ The page polls /api/state for progress and redirects to the dashboard on success
 			url := fmt.Sprintf("http://127.0.0.1:%d/", port)
 
 			fmt.Fprintln(cmd.OutOrStdout(), "Wizard listening at", url)
+
+			pub, err := mdns.Publish(cfg.Hostname, port)
+			if err != nil {
+				fmt.Fprintln(cmd.ErrOrStderr(), "warning: mDNS publish failed:", err)
+			} else {
+				defer pub.Shutdown()
+				fmt.Fprintf(cmd.OutOrStdout(), "Advertising %s on the LAN (IPs: %v)\n", pub.Hostname, pub.IPs)
+			}
 
 			ctx, stop := signal.NotifyContext(cmd.Context(), os.Interrupt)
 			defer stop()

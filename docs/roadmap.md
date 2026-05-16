@@ -25,13 +25,21 @@
 - [x] On `phase=done`, page redirects to the dashboard at http://localhost:8080/
 - [x] CLI auto-opens the browser when `snugnas wizard` starts
 
-## v0.4 — Installer
+## v0.4 — Installer & mDNS (done)
 
-- [ ] `snugnas install` detects Docker Desktop + WSL2
-- [ ] If missing, opens download page and waits for the user to finish install
-- [ ] mDNS broadcast for `snugnas.local` (Bonjour service publisher)
+- [x] `snugnas install` checks docker on PATH, daemon reachable, WSL2 default
+- [x] Prints a checklist with `[ok]` / `[--]` marks and one-line remediation per failure
+- [x] mDNS broadcast for `<hostname>.local` via grandcat/zeroconf
+- [x] mDNS started by `snugnas wizard` and `snugnas dashboard`; stopped on Ctrl+C
 
-## v0.5 — Windows polish
+## v0.5 — Subdomain routing, TLS, Jellyfin Base URL (deferred from v0.4)
+
+- [ ] Switch Caddy from path-based to subdomain routing (`immich.snugnas.local`, etc.)
+- [ ] Caddy `tls internal` for LAN-only HTTPS
+- [ ] Pre-configure Jellyfin Base URL during wizard so subpath routing works too
+- [ ] Option in `snugnas install` to free port 80 from IIS (W3SVC) so Caddy can use it
+
+## v0.6 — Windows polish
 
 - [ ] Tray app: start/stop/open dashboard/quit
 - [ ] Auto-start at login (Windows service or scheduled task)

@@ -11,6 +11,7 @@ import (
 	"github.com/Blazzical/snugNAS/internal/compose"
 	"github.com/Blazzical/snugNAS/internal/config"
 	"github.com/Blazzical/snugNAS/internal/landing"
+	"github.com/Blazzical/snugNAS/internal/mdns"
 	"github.com/spf13/cobra"
 )
 
@@ -85,6 +86,15 @@ func dashboardCmd() *cobra.Command {
 			ctx, stop := signal.NotifyContext(cmd.Context(), os.Interrupt)
 			defer stop()
 			fmt.Fprintf(cmd.OutOrStdout(), "Dashboard listening at http://127.0.0.1:%d/\n", cfg.DashboardPort)
+
+			pub, err := mdns.Publish(cfg.Hostname, cfg.DashboardPort)
+			if err != nil {
+				fmt.Fprintln(cmd.ErrOrStderr(), "warning: mDNS publish failed:", err)
+			} else {
+				defer pub.Shutdown()
+				fmt.Fprintf(cmd.OutOrStdout(), "Advertising %s on the LAN (IPs: %v)\n", pub.Hostname, pub.IPs)
+			}
+
 			return landing.Serve(ctx, cfg)
 		},
 	}
