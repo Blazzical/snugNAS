@@ -78,6 +78,32 @@ func Status(ctx context.Context, stdout, stderr io.Writer) error {
 	return run(ctx, stdout, stderr, "ps")
 }
 
+// Logs runs `docker compose logs [--follow] [--tail=N] [service]`.
+// service may be empty to show logs for all services.
+func Logs(ctx context.Context, stdout, stderr io.Writer, follow bool, tail int, service string) error {
+	args := []string{"logs"}
+	if follow {
+		args = append(args, "--follow")
+	}
+	if tail > 0 {
+		args = append(args, fmt.Sprintf("--tail=%d", tail))
+	}
+	if service != "" {
+		args = append(args, service)
+	}
+	return run(ctx, stdout, stderr, args...)
+}
+
+// Restart runs `docker compose restart [service]`. service may be empty to
+// restart all services.
+func Restart(ctx context.Context, stdout, stderr io.Writer, service string) error {
+	args := []string{"restart"}
+	if service != "" {
+		args = append(args, service)
+	}
+	return run(ctx, stdout, stderr, args...)
+}
+
 func run(ctx context.Context, stdout, stderr io.Writer, args ...string) error {
 	p, err := ComposePath()
 	if err != nil {
