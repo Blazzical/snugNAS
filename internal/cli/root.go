@@ -31,6 +31,7 @@ on Windows.`,
 		dashboardCmd(),
 		trayCmd(),
 		autostartCmd(),
+		resetCmd(),
 	)
 	return root
 }
