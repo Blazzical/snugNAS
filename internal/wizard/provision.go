@@ -30,6 +30,12 @@ func (s *Server) provision() {
 		return
 	}
 
+	s.append("Pre-configuring Jellyfin base URL...")
+	if err := ensureJellyfinBaseURL(s.cfg); err != nil {
+		s.fail(fmt.Errorf("jellyfin pre-config: %w", err))
+		return
+	}
+
 	s.append("Rendering compose stack...")
 	if err := compose.Render(s.cfg); err != nil {
 		s.fail(fmt.Errorf("render compose: %w", err))

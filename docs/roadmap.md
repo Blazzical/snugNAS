@@ -32,12 +32,21 @@
 - [x] mDNS broadcast for `<hostname>.local` via grandcat/zeroconf
 - [x] mDNS started by `snugnas wizard` and `snugnas dashboard`; stopped on Ctrl+C
 
-## v0.5 — Subdomain routing, TLS, Jellyfin Base URL (deferred from v0.4)
+## v0.5 — Jellyfin Base URL via subpath routing (done)
 
-- [ ] Switch Caddy from path-based to subdomain routing (`immich.snugnas.local`, etc.)
-- [ ] Caddy `tls internal` for LAN-only HTTPS
-- [ ] Pre-configure Jellyfin Base URL during wizard so subpath routing works too
-- [ ] Option in `snugnas install` to free port 80 from IIS (W3SVC) so Caddy can use it
+- [x] Wizard writes/patches `<StorageRoot>/jellyfin/config/config/network.xml`
+      with `<BaseUrl>/jellyfin</BaseUrl>` before first start
+- [x] Direct port 8096:8096 mapping removed from compose
+- [x] Caddy `/jellyfin/*` routes work end-to-end (web UI assets included)
+- [x] Dashboard tile + QR code updated to `http://<hostname>:8080/jellyfin/`
+
+## Deferred to later
+
+- Subdomain routing in Caddy (`immich.snugnas.local`, etc.) — depends on
+  reliable mDNS multi-label `.local` resolution; mixed support across Android
+- Caddy `tls internal` for LAN-only HTTPS — needs trust-store install flow
+- Immich behind Caddy subpath — Immich has no Base URL config; needs subdomains
+- Option in `snugnas install` to free port 80 from IIS (W3SVC)
 
 ## v0.6 — Windows polish
 

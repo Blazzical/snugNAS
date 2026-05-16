@@ -66,16 +66,14 @@ services:
   jellyfin:
     image: jellyfin/jellyfin:latest
     restart: unless-stopped
-    ports:
-      # Direct port mapping for v0.2 — Caddy subpath routing for Jellyfin
-      # needs its internal "Base URL" set, which is wizard work for v0.3.
-      - "8096:8096"
+    # No host port mapping — the wizard pre-configures Jellyfin's BaseUrl
+    # to /jellyfin and Caddy reverse-proxies /jellyfin/* to this container.
     volumes:
       - "{{.PosixStorageRoot}}/jellyfin/config:/config"
       - "{{.PosixStorageRoot}}/jellyfin/cache:/cache"
       - "{{.PosixStorageRoot}}/media:/media:ro"
     environment:
-      JELLYFIN_PublishedServerUrl: http://{{.Hostname}}:8096
+      JELLYFIN_PublishedServerUrl: http://{{.Hostname}}:8080/jellyfin
 
   # ── FileBrowser (general files) ───────────────────────────────────────────
   filebrowser:

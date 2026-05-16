@@ -106,7 +106,7 @@ func serviceURL(cfg *config.Config, service string) (string, error) {
 	case "immich":
 		return fmt.Sprintf("http://%s:2283/", cfg.Hostname), nil
 	case "jellyfin":
-		return fmt.Sprintf("http://%s:8096/", cfg.Hostname), nil
+		return fmt.Sprintf("http://%s:8080/jellyfin/", cfg.Hostname), nil
 	case "filebrowser":
 		return fmt.Sprintf("http://%s:8080/files/", cfg.Hostname), nil
 	default:
