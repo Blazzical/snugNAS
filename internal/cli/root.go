@@ -4,7 +4,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const version = "0.0.1-dev"
+// version is overridable at build time with:
+//
+//	go build -ldflags "-X github.com/Blazzical/snugNAS/internal/cli.version=0.6.2" ./cmd/snugnas
+var version = "0.0.1-dev"
 
 func Root() *cobra.Command {
 	root := &cobra.Command{
