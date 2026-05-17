@@ -74,6 +74,12 @@ FunctionEnd
 Section "snugNAS" SecCore
   SectionIn RO  ; required component
 
+  ; All-users install: shortcuts under the common Start menu and registry
+  ; writes go to the native 64-bit view (not WOW6432Node, which is the
+  ; default for 32-bit-unicode NSIS builds).
+  SetShellVarContext all
+  SetRegView 64
+
   SetOutPath "$INSTDIR"
   File "..\${APP_EXE}"
   File "..\LICENSE"
@@ -103,6 +109,11 @@ Section "snugNAS" SecCore
 SectionEnd
 
 Section "Uninstall"
+  ; Match the install side so we look in the right Start menu folder and
+  ; the right registry view when removing.
+  SetShellVarContext all
+  SetRegView 64
+
   Delete "$INSTDIR\${APP_EXE}"
   Delete "$INSTDIR\LICENSE"
   Delete "$INSTDIR\README.md"
