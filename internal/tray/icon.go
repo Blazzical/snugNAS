@@ -10,8 +10,8 @@ func snugnasIcon() []byte {
 	const bmpHdrOff = headerOff
 	const pixelsOff = bmpHdrOff + 40
 
-	pixelBytes := w * h * 4         // 32bpp BGRA
-	maskBytes := (w * h) / 8        // 1bpp AND mask
+	pixelBytes := w * h * 4  // 32bpp BGRA
+	maskBytes := (w * h) / 8 // 1bpp AND mask
 	bmpBytes := 40 + pixelBytes + maskBytes
 	total := headerOff + bmpBytes
 
@@ -25,20 +25,20 @@ func snugnasIcon() []byte {
 	// ICONDIRENTRY
 	b[6] = w
 	b[7] = h
-	b[8] = 0 // color count
-	b[9] = 0 // reserved
-	binary.LittleEndian.PutUint16(b[10:], 1)               // planes
-	binary.LittleEndian.PutUint16(b[12:], 32)              // bit count
+	b[8] = 0                                                // color count
+	b[9] = 0                                                // reserved
+	binary.LittleEndian.PutUint16(b[10:], 1)                // planes
+	binary.LittleEndian.PutUint16(b[12:], 32)               // bit count
 	binary.LittleEndian.PutUint32(b[14:], uint32(bmpBytes)) // bytes in res
 	binary.LittleEndian.PutUint32(b[18:], headerOff)        // image offset
 
 	// BITMAPINFOHEADER
 	bh := b[bmpHdrOff : bmpHdrOff+40]
-	binary.LittleEndian.PutUint32(bh[0:], 40)         // biSize
-	binary.LittleEndian.PutUint32(bh[4:], uint32(w))  // biWidth
+	binary.LittleEndian.PutUint32(bh[0:], 40)          // biSize
+	binary.LittleEndian.PutUint32(bh[4:], uint32(w))   // biWidth
 	binary.LittleEndian.PutUint32(bh[8:], uint32(h*2)) // biHeight (image + mask)
-	binary.LittleEndian.PutUint16(bh[12:], 1)         // biPlanes
-	binary.LittleEndian.PutUint16(bh[14:], 32)        // biBitCount
+	binary.LittleEndian.PutUint16(bh[12:], 1)          // biPlanes
+	binary.LittleEndian.PutUint16(bh[14:], 32)         // biBitCount
 	// remaining fields stay zero (BI_RGB, no compression)
 
 	// Pixel data: BGRA, bottom-up. #4ea1ff -> R=78, G=161, B=255, A=255.

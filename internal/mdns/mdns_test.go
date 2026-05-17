@@ -4,14 +4,14 @@ import "testing"
 
 func TestCanonicalHostname(t *testing.T) {
 	cases := map[string]string{
-		"snugnas":         "snugnas",
-		"snugnas.local":   "snugnas",
-		"snugnas.local.":  "snugnas",
-		"foo.bar.local":   "foo.bar",
-		"foo.bar.local.":  "foo.bar",
-		"":                "",
-		".local":          "",
-		".local.":         "",
+		"snugnas":        "snugnas",
+		"snugnas.local":  "snugnas",
+		"snugnas.local.": "snugnas",
+		"foo.bar.local":  "foo.bar",
+		"foo.bar.local.": "foo.bar",
+		"":               "",
+		".local":         "",
+		".local.":        "",
 	}
 	for in, want := range cases {
 		got := canonicalHostname(in)

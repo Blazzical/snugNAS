@@ -32,6 +32,7 @@ on Windows.`,
 		trayCmd(),
 		autostartCmd(),
 		resetCmd(),
+		updateCmd(),
 	)
 	return root
 }

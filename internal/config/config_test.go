@@ -26,10 +26,10 @@ func TestDefault(t *testing.T) {
 
 func TestPosixStorageRoot(t *testing.T) {
 	cases := map[string]string{
-		`E:\snugNAS-data`:           "E:/snugNAS-data",
-		`D:\foo\bar`:                "D:/foo/bar",
-		`/already/posix`:            "/already/posix",
-		``:                          "",
+		`E:\snugNAS-data`:            "E:/snugNAS-data",
+		`D:\foo\bar`:                 "D:/foo/bar",
+		`/already/posix`:             "/already/posix",
+		``:                           "",
 		`C:\Users\name with space\d`: "C:/Users/name with space/d",
 	}
 	for in, want := range cases {
