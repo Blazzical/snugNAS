@@ -173,6 +173,10 @@ func (s *Server) handleCommit(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	if err := validateStorage(form.StorageRoot); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	s.mu.Lock()
 	if s.phase == PhaseProvisioning {
