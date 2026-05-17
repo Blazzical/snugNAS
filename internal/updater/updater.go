@@ -42,6 +42,12 @@ func LatestRelease(ctx context.Context) (*Release, error) {
 // LatestReleaseFor fetches the latest release of a specific GitHub repo.
 func LatestReleaseFor(ctx context.Context, repo string) (*Release, error) {
 	url := fmt.Sprintf("https://api.github.com/repos/%s/releases/latest", repo)
+	return fetchFrom(ctx, url)
+}
+
+// fetchFrom is the inner implementation, factored out so tests can point at
+// an httptest.Server instead of the real GitHub API.
+func fetchFrom(ctx context.Context, url string) (*Release, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err

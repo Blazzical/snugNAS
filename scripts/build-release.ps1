@@ -14,7 +14,7 @@ $repo = Resolve-Path (Join-Path $PSScriptRoot '..')
 Set-Location $repo
 
 Write-Host "Building snugnas.exe v$Version..."
-$ldflags = "-s -w -X github.com/Blazzical/snugNAS/internal/cli.version=$Version"
+$ldflags = "-s -w -X github.com/Blazzical/snugNAS/internal/buildinfo.Version=$Version"
 go build -ldflags $ldflags -o snugnas.exe .\cmd\snugnas
 if ($LASTEXITCODE -ne 0) { throw "go build failed" }
 

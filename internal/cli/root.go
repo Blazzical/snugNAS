@@ -1,13 +1,13 @@
 package cli
 
 import (
+	"github.com/Blazzical/snugNAS/internal/buildinfo"
 	"github.com/spf13/cobra"
 )
 
-// version is overridable at build time with:
-//
-//	go build -ldflags "-X github.com/Blazzical/snugNAS/internal/cli.version=0.6.2" ./cmd/snugnas
-var version = "0.0.1-dev"
+// version is sourced from internal/buildinfo so the ldflags override has a
+// single canonical target (see internal/buildinfo/buildinfo.go).
+var version = buildinfo.Version
 
 func Root() *cobra.Command {
 	root := &cobra.Command{

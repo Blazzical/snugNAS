@@ -64,4 +64,21 @@
 
     pollHealth();
     setInterval(pollHealth, 5000);
+
+    async function pollInfo() {
+        try {
+            const r = await fetch('/api/info');
+            if (!r.ok) return;
+            const i = await r.json();
+            const set = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = val;
+            };
+            set('info-version', i.version || '?');
+            set('info-hostname', i.hostname || '?');
+            set('info-uptime', i.uptime || '?');
+        } catch (_) { /* ignore */ }
+    }
+    pollInfo();
+    setInterval(pollInfo, 10000);
 })();

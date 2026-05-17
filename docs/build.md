@@ -12,7 +12,7 @@ Outputs `snugnas.exe` at the repo root. Optional: pass a release version with
 ldflags:
 
 ```powershell
-go build -ldflags "-s -w -X github.com/Blazzical/snugNAS/internal/cli.version=0.6.2" -o snugnas.exe .\cmd\snugnas
+go build -ldflags "-s -w -X github.com/Blazzical/snugNAS/internal/buildinfo.Version=0.7.5" -o snugnas.exe .\cmd\snugnas
 ```
 
 `-s -w` strips DWARF and symbol table to shave a few MB; `-X ...version=...`

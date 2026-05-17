@@ -15,10 +15,15 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Blazzical/snugNAS/internal/buildinfo"
 	"github.com/Blazzical/snugNAS/internal/compose"
 	"github.com/Blazzical/snugNAS/internal/config"
 	qrcode "github.com/skip2/go-qrcode"
 )
+
+// startTime records when the landing package was first imported — used as
+// process-start for the /api/info uptime field.
+var startTime = time.Now()
 
 //go:embed web
 var webFS embed.FS
@@ -33,8 +38,27 @@ func Handlers(cfg *config.Config) http.Handler {
 	mux.Handle("/static/", http.FileServer(http.FS(sub)))
 	mux.HandleFunc("/api/qr", qrHandler(cfg))
 	mux.HandleFunc("/api/health", healthHandler())
+	mux.HandleFunc("/api/info", infoHandler(cfg))
 	mux.HandleFunc("/", indexHandler(sub))
 	return mux
+}
+
+// infoHandler returns version, hostname, and uptime as JSON. Used by the
+// dashboard footer so the user can see what they're running.
+func infoHandler(cfg *config.Config) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		info := struct {
+			Version  string `json:"version"`
+			Hostname string `json:"hostname"`
+			Uptime   string `json:"uptime"`
+		}{
+			Version:  buildinfo.Version,
+			Hostname: cfg.Hostname,
+			Uptime:   time.Since(startTime).Round(time.Second).String(),
+		}
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		_ = json.NewEncoder(w).Encode(info)
+	}
 }
 
 // healthHandler returns the per-service docker compose ps status as JSON.
