@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/pelletier/go-toml/v2"
 )
@@ -111,8 +112,14 @@ func IsNotConfigured(err error) bool {
 // PosixStorageRoot returns StorageRoot with backslashes converted to forward
 // slashes. Used by templates so YAML doesn't choke on Windows paths and Docker
 // accepts the bind-mount source consistently.
+//
+// We use strings.ReplaceAll (not filepath.ToSlash) on purpose: on Linux,
+// filepath.ToSlash treats `\` as a literal character, not a separator, so it
+// would leave Windows paths intact. We always want backslashes converted
+// regardless of the host OS, because the generated docker-compose.yml is
+// consumed by Docker (which wants posix paths) not the host filesystem.
 func (c *Config) PosixStorageRoot() string {
-	return filepath.ToSlash(c.StorageRoot)
+	return strings.ReplaceAll(c.StorageRoot, `\`, "/")
 }
 
 func randomHex(nBytes int) (string, error) {
