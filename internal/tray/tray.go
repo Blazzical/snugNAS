@@ -1,8 +1,10 @@
+//go:build windows
+
 // Package tray runs the snugNAS Windows tray app. It owns the lifecycle of the
 // dashboard HTTP server and the mDNS publisher so the user has a single
 // always-on entry point: launch snugNAS, see the tray icon, click to open the
 // dashboard. Backed by github.com/getlantern/systray, which uses Win32 syscalls
-// on Windows (no Cgo).
+// on Windows (no Cgo). The non-Windows build sits in tray_other.go.
 package tray
 
 import (

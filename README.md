@@ -1,5 +1,7 @@
 # snugNAS
 
+[![CI](https://github.com/Blazzical/snugNAS/actions/workflows/ci.yml/badge.svg)](https://github.com/Blazzical/snugNAS/actions/workflows/ci.yml)
+
 **CasaOS for Windows.** A one-installer NAS stack that runs on top of your existing Windows machine — keep Windows, get a Synology-quality experience.
 
 snugNAS bundles best-in-class open-source services behind a single installer, a non-technical first-run wizard, and a web dashboard with QR codes that point your phone and smart TV at the right app.
