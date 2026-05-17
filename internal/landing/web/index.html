@@ -13,24 +13,33 @@
     </header>
 
     <main class="tiles">
-        <a class="tile" data-port="2283" data-path="/" href="#">
-            <div class="tile-icon">photos</div>
+        <a class="tile" data-port="2283" data-path="/" data-service="immich-server" href="#">
+            <div class="tile-head">
+                <div class="tile-icon">photos</div>
+                <span class="status-dot" data-status="unknown" title="checking…"></span>
+            </div>
             <h2>Photos</h2>
             <p>Auto-backup from your phone. Powered by Immich.</p>
             <img class="qr" src="/api/qr?service=immich" alt="Immich QR code">
             <span class="hint">Scan to set up the Immich app</span>
         </a>
 
-        <a class="tile" data-port="8080" data-path="/jellyfin/" href="#">
-            <div class="tile-icon">media</div>
+        <a class="tile" data-port="8080" data-path="/jellyfin/" data-service="jellyfin" href="#">
+            <div class="tile-head">
+                <div class="tile-icon">media</div>
+                <span class="status-dot" data-status="unknown" title="checking…"></span>
+            </div>
             <h2>Movies &amp; Music</h2>
             <p>Stream to your phone, smart TV, or browser. Powered by Jellyfin.</p>
             <img class="qr" src="/api/qr?service=jellyfin" alt="Jellyfin QR code">
             <span class="hint">Scan to set up the Jellyfin app</span>
         </a>
 
-        <a class="tile" data-port="8080" data-path="/files/" href="#">
-            <div class="tile-icon">files</div>
+        <a class="tile" data-port="8080" data-path="/files/" data-service="filebrowser" href="#">
+            <div class="tile-head">
+                <div class="tile-icon">files</div>
+                <span class="status-dot" data-status="unknown" title="checking…"></span>
+            </div>
             <h2>Files</h2>
             <p>Browse, upload, and share everything else. Powered by FileBrowser.</p>
             <img class="qr" src="/api/qr?service=filebrowser" alt="FileBrowser QR code">
@@ -42,16 +51,6 @@
         <p>snugNAS · <a href="https://github.com/Blazzical/snugNAS">source</a></p>
     </footer>
 
-    <script>
-        // Tile hrefs use the same hostname the user reached the dashboard on
-        // (localhost / snugnas.local / LAN IP), so a phone scanning the QR
-        // and a desktop browser both land on a reachable URL.
-        document.querySelectorAll('a.tile').forEach(t => {
-            const host = window.location.hostname;
-            const port = t.dataset.port;
-            const path = t.dataset.path || '/';
-            t.href = `http://${host}:${port}${path}`;
-        });
-    </script>
+    <script src="/static/dashboard.js"></script>
 </body>
 </html>

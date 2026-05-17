@@ -6,6 +6,7 @@ package landing
 import (
 	"context"
 	"embed"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io/fs"
@@ -14,6 +15,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Blazzical/snugNAS/internal/compose"
 	"github.com/Blazzical/snugNAS/internal/config"
 	qrcode "github.com/skip2/go-qrcode"
 )
@@ -30,8 +32,28 @@ func Handlers(cfg *config.Config) http.Handler {
 	mux := http.NewServeMux()
 	mux.Handle("/static/", http.FileServer(http.FS(sub)))
 	mux.HandleFunc("/api/qr", qrHandler(cfg))
+	mux.HandleFunc("/api/health", healthHandler())
 	mux.HandleFunc("/", indexHandler(sub))
 	return mux
+}
+
+// healthHandler returns the per-service docker compose ps status as JSON.
+// Used by the dashboard to colour the status dot on each tile.
+func healthHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+		defer cancel()
+		statuses, err := compose.PS(ctx)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if statuses == nil {
+			statuses = []compose.ServiceStatus{} // avoid `null` in the JSON
+		}
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		_ = json.NewEncoder(w).Encode(statuses)
+	}
 }
 
 // Serve starts the dashboard HTTP server on localhost:<DashboardPort> and

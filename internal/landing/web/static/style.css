@@ -5,6 +5,10 @@
     --text: #e6e8ec;
     --muted: #9aa3b2;
     --accent: #4ea1ff;
+    --healthy: #4ade80;
+    --starting: #fbbf24;
+    --down: #ef4444;
+    --unknown: #555;
 }
 
 * { box-sizing: border-box; }
@@ -64,13 +68,32 @@ header h1 {
     transform: translateY(-2px);
 }
 
+.tile-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
+
 .tile-icon {
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: var(--accent);
-    margin-bottom: 0.5rem;
 }
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--unknown);
+    transition: background 200ms;
+    flex-shrink: 0;
+}
+.status-dot[data-status="healthy"]  { background: var(--healthy); }
+.status-dot[data-status="starting"] { background: var(--starting); }
+.status-dot[data-status="down"]     { background: var(--down); }
 
 .tile h2 {
     margin: 0 0 0.5rem;
