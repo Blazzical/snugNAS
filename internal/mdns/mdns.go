@@ -33,7 +33,7 @@ func Publish(hostname string, dashboardPort int) (*Publisher, error) {
 	if hostname == "" {
 		return nil, errors.New("hostname is required")
 	}
-	name := strings.TrimSuffix(strings.TrimSuffix(hostname, "."), ".local")
+	name := canonicalHostname(hostname)
 	if name == "" {
 		return nil, fmt.Errorf("invalid hostname %q", hostname)
 	}
@@ -78,6 +78,12 @@ func (p *Publisher) Shutdown() {
 		return
 	}
 	p.server.Shutdown()
+}
+
+// canonicalHostname strips a trailing "." and ".local" so callers can pass
+// "snugnas", "snugnas.local", or "snugnas.local." interchangeably.
+func canonicalHostname(s string) string {
+	return strings.TrimSuffix(strings.TrimSuffix(s, "."), ".local")
 }
 
 // lanIPv4 returns the IPv4 addresses of every non-loopback up interface.
