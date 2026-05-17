@@ -3,6 +3,7 @@
 /snugnas.exe
 /dist/
 /bin/
+/installer/snugnas-setup.exe
 
 # Go
 *.test

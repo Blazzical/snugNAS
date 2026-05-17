@@ -6,7 +6,9 @@
 ; Expects a freshly built snugnas.exe at the repo root. See docs\build.md.
 
 !define APP_NAME      "snugNAS"
-!define APP_VERSION   "0.6.2"
+!ifndef APP_VERSION
+  !define APP_VERSION "0.0.1-dev"
+!endif
 !define APP_PUBLISHER "snugNAS contributors"
 !define APP_URL       "https://github.com/Blazzical/snugNAS"
 !define APP_EXE       "snugnas.exe"
@@ -20,7 +22,15 @@ RequestExecutionLevel admin
 SetCompressor /SOLID lzma
 Unicode true
 
-VIProductVersion "0.6.2.0"
+; VIProductVersion needs an x.y.z.b 4-part numeric form. The CLI passes a
+; semver like "0.8.1"; map any missing trailing parts to .0 so e.g. 0.8.1
+; -> 0.8.1.0. Built-in cleanups would be nicer in NSIS 4 but for now we
+; just require the caller to pass an x.y.z value.
+!ifndef APP_VERSION_NUMERIC
+  !define APP_VERSION_NUMERIC "${APP_VERSION}.0"
+!endif
+
+VIProductVersion "${APP_VERSION_NUMERIC}"
 VIAddVersionKey "ProductName"     "${APP_NAME}"
 VIAddVersionKey "FileDescription" "snugNAS installer"
 VIAddVersionKey "FileVersion"     "${APP_VERSION}"
